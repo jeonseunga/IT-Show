@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace = "Order">
+ 	<insert id="insertSeat" parameterType="Map">
+ 		insert into is_seat_order values(seat_order_seq.NEXTVAL, #{seat}, 0, #{i_s_num})
+ 	</insert>
+ 	<select id="getTime" resultType="info.InfoTimeDataBean" parameterType="java.util.Map">
+		select * from is_info_time where i_t_time=#{o_starttime} and i_d_num=#{i_d_num}
+	</select>
+	
+ 	<select id="getImg" resultType="String" parameterType="java.util.Map">
+		select s_img_path from is_seat_img where i_num=#{i_num} and s_img_hall=#{hall}
+	</select>
+	
+	<select id="getFloor" resultType="String" parameterType="int">
+		select distinct i_s_floor from is_info_seat where i_t_num=#{i_t_num}
+	</select>
+	
+	<select id="getSeat" resultType="info.InfoSeatDataBean" parameterType="java.util.Map">
+		select distinct i_s_level,i_s_price from is_info_seat where i_t_num=#{i_t_num} and i_s_floor=#{floor} order by i_s_price DESC
+	</select>
+	
+	<select id="getSeats" resultType="info.InfoSeatDataBean" parameterType="java.util.Map">
+		select * from is_info_seat where i_t_num=#{i_t_num} and i_s_floor=#{floor} and i_s_level=#{level} order by i_s_num ASC
+	</select>
+	
+	<select id="level_SelectSeat" resultType="info.InfoSeatDataBean" parameterType="int">
+		select * from is_info_seat where i_s_num=#{i_s_num}
+	</select>
+	
+	<select id="oneSeat" resultType="info.InfoSeatOrderDataBean" parameterType="int">
+		select * from is_seat_order where i_s_num=#{i_s_num} and s_o_check=0
+	</select>
+	
+	<select id="check" resultType="int" parameterType="int">
+		select s_o_check from is_seat_order where s_o_num =#{s_o_num}
+	</select>
+	
+	<select id="getInfo" resultType="info.InfoDataBean" parameterType="int">
+		select * from is_info where i_num = #{i_num}
+	</select>
+	
+	<select id="getDate" resultType="info.InfoDateDataBean" parameterType="int">
+		select * from is_info_date where i_d_num = #{i_d_num}
+	</select>
+	
+	<select id="getTime1" resultType="info.InfoTimeDataBean" parameterType="int">
+		select * from is_info_time where i_t_num = #{i_t_num}
+	</select>
+	
+	<select id="getName" resultType="info.InfoSeatOrderDataBean" parameterType="int">
+		select * from is_seat_order where s_o_num =#{s_o_num}
+	</select>
+	
+ 	<select id="getLevel" resultType="info.InfoSeatDataBean" parameterType="int">
+		select * from is_info_seat where i_s_num = #{i_s_num}
+	</select>
+	
+	<select id="getMember" resultType="member.MemberDataBean" parameterType="String">
+		select * from is_member where m_id=#{id}
+	</select>
+
+	<update id="changeCk" parameterType="int">
+		update is_seat_order set s_o_check=1 where s_o_num=#{s_o_num}
+	</update>
+	
+	<update id="delCount" parameterType="java.util.Map">
+		update is_info_seat set i_t_count=#{count} where i_s_num=#{i_s_num}
+	</update>
+
+	<update id="returnCk" parameterType="int">
+		update is_seat_order set s_o_check=0 where s_o_num=#{s_o_num}
+	</update>
+	
+	<insert id="insertOrder" parameterType="java.util.Map">
+		insert into is_order values(
+			order_seq.nextVal,
+			#{money},#{i_name},#{i_date},#{i_t_time},#{msg},#{o_tickets},#{s_o_numlist},#{price},0,#{id}
+		)
+	</insert>
+	
+	<select id="order" resultType="order.OrderDataBean" parameterType="String">
+		select * from is_order where o_ticket_list=#{s_o_numlist}
+	</select>
+	
+	<insert id="insertTicket" parameterType="java.util.Map">
+		insert into is_order_ticket values(
+			o_ticket_seq.nextVal,#{o_t_seatname},#{o_num}
+		)
+	</insert>
+	
+	<update id="rePoint" parameterType="java.util.Map">
+		update is_member set m_point=#{saveP} where m_id =#{id}
+	</update>
+	
+	<select id="getDateNumber" resultType="int" parameterType="Map">
+		select i_d_num from is_info_date where i_num = #{i_num} and i_date =
+		#{i_date}
+	</select>
+	
+ </mapper>

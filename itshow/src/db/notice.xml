@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace = "Notice">
+ 	<select id="getCount" resultType="int">
+		select count(*) from is_notice
+	</select>
+	
+	<select id="getArticles" resultType="notice.NoticeDataBean" parameterType="Map">
+			select n_num, n_title, n_content, n_date, m_id, r 
+			from (select n_num, n_title, n_content, n_date, m_id, rownum r 
+			from (select n_num, n_title, n_content, n_date, m_id from is_notice order by n_num desc)) 
+			where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	
+	<insert id="insertArticle">
+ 		insert into is_notice values(notice_seq.NEXTVAL, #{n_title}, #{n_content}, #{n_date}, #{m_id})
+ 	</insert>
+ 	
+ 	<select id="getArticle" resultType="notice.NoticeDataBean"
+		parameterType="int">
+			select * from is_notice where n_num = #{n_num}
+	</select>
+	
+	<delete id="deleteArticle" parameterType="Map">
+		delete from is_notice where n_num=#{n_num}
+	</delete>
+	
+	<update id="updateArticle" parameterType="notice.NoticeDataBean">
+		update is_notice set 
+		n_title=#{n_title}, n_content=#{n_content} where n_num=#{n_num}
+	</update>
+	
+	<select id="getCode" resultType="int" parameterType="String">
+		select m_code from is_member where m_id=#{m_id}
+	</select>
+ </mapper>

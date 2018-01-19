@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace = "Info">
+ 
+ 	<!-- info -->
+ 	<insert id="getinsertDB" parameterType="info.InfoDataBean">
+		insert into is_info(i_num, i_name, i_location, i_location_addr, i_location_zip, i_open_date, c_category, i_img_thumbnail, m_id, i_reg_date, i_readcount, i_period, i_video_path)
+		values(info_seq.NEXTVAL,#{i_name}, #{i_location}, #{i_location_addr}, #{i_location_zip}, #{i_open_date}, #{c_category}, #{i_img_thumbnail}, #{m_id}, #{i_reg_date}, #{i_readcount}, #{i_period}, #{i_video_path, jdbcType=VARCHAR})
+	</insert>
+ 	<select id="getnum" resultType="int" parameterType="info.InfoDataBean">
+		select i_num from is_info where m_id=#{m_id} and i_name=#{i_name}
+	</select>
+	<select id="getinfo" resultType="info.InfoDataBean">
+		select * from is_info
+	</select>
+	<select id="getInfoDetail" resultType="info.InfoDataBean"
+		parameterType="int">
+		select * from is_info where i_num = #{i_num}
+	</select>
+	<select id="getModiArticle" resultType="info.InfoDataBean" parameterType="int">
+		select * from is_info where i_num=#{i_num}
+	</select>
+	<select id="check" resultType="String" parameterType="int">
+		select m_id from is_info where i_num=#{i_num}
+	</select>
+	<select id="checkId" resultType="String" parameterType="int">
+		select m_id from is_info where i_num=#{i_num}
+	</select>
+	<select id="getWriteid" resultType="String" parameterType="Map">
+		select m_id from is_info where i_num=#{i_num}
+	</select>
+	<select id="getCode1Dto" parameterType="int" resultType="info.InfoDataBean">
+		select i_num, i_name, r 
+	    from (select i_num, i_name, rownum r 
+	    from (select i_num, i_name from is_info where c_category = #{code} order by i_readcount desc)) 
+	    where r &gt;=1 and r &lt;=3
+	</select>
+	<update id="updateInfoDB" parameterType="info.InfoDataBean">
+		update is_info 
+		set i_name=#{i_name}, i_location=#{i_location}, 
+		i_location_addr=#{i_location_addr}, i_location_zip=#{i_location_zip},
+		i_open_date=#{i_open_date}, c_category=#{c_category}, 
+		i_img_thumbnail=#{i_img_thumbnail}, 
+		i_period=#{i_period}, i_video_path=#{i_video_path, jdbcType=VARCHAR}
+		where i_num=#{i_num} and m_id=#{m_id}
+	</update>
+	<delete id="deleteInfo" parameterType="int">
+		delete from is_info where i_num=#{i_num}
+	</delete>
+	<!-- *** 판매현황 *** -->
+	<select id="getSalesCount" resultType="int"
+		parameterType="String">
+		select count(*) from is_info where m_id = #{m_id}
+	</select>
+	<select id="getSalesList" resultType="info.InfoDataBean"
+		parameterType="String">
+		select * from is_info where m_id = #{m_id} order by
+		i_reg_date desc
+	</select>
+	<!-- *** 스크랩 리스트 *** -->
+	<select id="getScrapList" resultType="info.InfoDataBean" parameterType="int">
+		select * from is_info where i_num=#{i_num}
+	</select>
+	<select id="checkScrap" resultType="int" parameterType="Map">
+		select count(*) from is_scrap where m_id = #{m_id} and s_info_num = #{s_info_num}
+	</select>
+	<!-- *** 공연 정보 리스트 *** -->
+	<select id="getCatCount" resultType="int" parameterType="int">
+		select count(*) from is_info where c_category = #{c_category}
+	</select>
+	<select id="getInfoList" resultType="info.InfoDataBean"
+		parameterType="Map">		
+		select i_num, i_name, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, r 
+	    from (select i_num, i_name, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, rownum r 
+	    from (select i_num, i_name, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date 
+	    from is_info where c_category = #{c_category} 
+	    order by i_reg_date desc)) 
+	    where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	<select id="getInfoListRecent" resultType="info.InfoDataBean"
+		parameterType="Map">		
+		select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, rownum r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount 
+	    from is_info where c_category = #{c_category} 
+	    order by i_reg_date desc)) 
+	    where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	<select id="getInfoListCount" resultType="info.InfoDataBean"
+		parameterType="Map">		
+		select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, rownum r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount 
+	    from is_info where c_category = #{c_category} 
+	    order by i_readcount desc)) 
+	    where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	<select id="getInfoListReview" resultType="info.InfoDataBean"
+		parameterType="Map">		
+		select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, rownum r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount 
+	    from is_info where c_category = #{c_category} 
+	    order by i_score desc)) 
+	    where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	<update id="updateReadCount">
+		update is_info set i_readcount = i_readcount+1 where i_num = #{i_num}
+	</update>
+	<update id="updateScore" parameterType="int">
+		update is_info set i_score = (select avg(i_re_score) from is_info_reply  where i_num = #{i_num}) where i_num = #{i_num}
+	</update>
+	
+	<!-- content -->
+	<insert id="getinsertconDB" parameterType="info.InfoContentDataBean">
+		insert into is_info_content(i_c_num, i_c_content, i_c_img_path, i_num)
+		values(info_content_seq.NEXTVAL,#{i_c_content, jdbcType=VARCHAR},#{i_c_img_path, jdbcType=VARCHAR}, #{i_num})
+	</insert>
+	<select id="getCnums" resultType="int" parameterType="int">
+		select i_c_num from is_info_content where i_num=#{i_num}
+	</select>
+	<select id="getInfoContents" resultType="info.InfoContentDataBean"
+		parameterType="int">
+		select * from is_info_content where i_num = #{i_num} order by i_c_num asc
+	</select>
+	<select id="getinfocon" resultType="info.InfoContentDataBean" parameterType="int">
+		select * from is_info_content where i_num=#{i_num}
+	</select>
+	<delete id="deleteContent" parameterType="int">
+		delete from is_info_content where i_num=#{i_num}
+	</delete>
+ 	
+ 	<!-- date -->
+	<insert id="getinsertDateDB" parameterType="info.InfoDateDataBean">
+		insert into is_info_date(i_d_num, i_date, i_num)
+		values(info_date_seq.NEXTVAL, #{i_date}, #{i_num})
+	</insert>
+	<select id="getDateNum" resultType="int"
+		parameterType="int">
+		select i_d_num from is_info_date where i_num = #{i_num}
+	</select>
+	<select id="getDnums" resultType="int" parameterType="int">
+		select i_d_num from is_info_date where i_num=#{i_num}
+	</select>
+	<select id="getDateNumber" resultType="int"
+		parameterType="Map">
+		select i_d_num from is_info_date where i_num = #{i_num} and i_date = #{i_date}
+	</select>
+	<select id="getDateNumbers" resultType="int"
+		parameterType="Map">
+		select i_d_num from is_info_date where i_num = #{i_num} and i_date = #{i_date}
+	</select>
+	<select id="getDate" resultType="info.InfoDateDataBean" parameterType="int">
+		select * from is_info_date where i_num=#{i_num, jdbcType=INTEGER}
+	</select>
+	<select id="getInfoDates" resultType="info.InfoDateDataBean"
+		parameterType="Map">
+		<!-- select * from is_info_date where i_num = #{i_num} and (select to_timestamp((select i_date is_info from is_info_date where i_num = #{i_num}), 'YYYY-MM-DD') FROM DUAL) > sysdate -->
+		select * from is_info_date where i_num = #{i_num} and i_date &gt; #{i_date}
+	</select>
+	<select id="getinfodate" resultType="info.InfoDateDataBean" parameterType="int">
+		select * from is_info_date where i_num=#{i_num}
+	</select>
+	<update id="updateinfoDateDB" parameterType="info.InfoDateDataBean">
+		update is_info_date set i_date=#{i_date} where i_num=#{i_num}
+	</update>
+	<delete id="deleteDate" parameterType="int">
+		delete from is_info_date where i_num=#{i_num}
+	</delete>
+	
+	<!-- time -->
+	<insert id="getinsertTimeDB" parameterType="info.InfoTimeDataBean">
+		insert into is_info_time(i_t_num, i_t_time, i_t_hall, i_d_num, i_t_duration)
+		values(info_time_seq.NEXTVAL, #{i_t_time}, #{i_t_hall}, #{i_d_num}, #{i_t_duration})
+	</insert>
+	<select id="getTimeNum" resultType="int" parameterType="int">
+		select i_t_num from is_info_time where i_d_num=#{i_d_num}
+	</select>
+	<select id="getTnums" resultType="int" parameterType="int">
+		select i_t_num from is_info_time where i_d_num=#{i_d_num}
+	</select>
+	<select id="getTimeNumber" resultType="int" parameterType="map">
+		select i_t_num from is_info_time where i_d_num=#{i_d_num} and i_t_time=#{i_t_time}
+	</select>
+	
+	<select id="getTimeList" resultType="info.InfoTimeDataBean"
+		parameterType="int">
+		select * from is_info_time where i_d_num = #{i_d_num} order by i_t_time
+	</select>
+	<select id="getinfotime" resultType="info.InfoTimeDataBean" parameterType="int">
+		select * from is_info_time where i_d_num=(select i_d_num from where i_num=#{i_num})
+	</select>
+	<select id="getis_info_time" resultType="info.InfoTimeDataBean" parameterType="int">
+		select * from is_info_time where i_d_num=#{i_d_num}
+	</select>
+	<delete id="deleteTime" parameterType="int">
+		delete from is_info_time where i_d_num=#{i_d_num}
+	</delete>
+	
+	<!-- seat -->
+	<insert id="getinsertSeatDB" parameterType="info.InfoSeatDataBean">
+		insert into is_info_seat(i_s_num, i_s_name, i_s_price, i_s_start, i_s_end, i_t_num, i_s_floor, i_s_level, i_t_count)
+		values(info_seat_seq.NEXTVAL, #{i_s_name}, #{i_s_price}, #{i_s_start}, #{i_s_end}, #{i_t_num}, #{i_s_floor}, #{i_s_level}, #{i_t_count})
+	</insert>
+	<select id="getSnum" resultType="int" parameterType="info.InfoTimeDataBean">
+		select i_t_num from is_info_time where i_t_hall=#{i_t_hall} and i_d_num=#{i_d_num}
+	</select>
+	<select id="getSnums" resultType="int" parameterType="int">
+		select i_s_num from is_info_seat where i_t_num=#{i_t_num}
+	</select>
+	<select id="getSeat" resultType="info.InfoSeatDataBean"
+		parameterType="int">
+	  <!-- select i_s_num, i_s_floor, i_s_level, i_s_name, i_s_price, i_t_num, i_t_count, i_s_end-i_s_start+1 as i_s_total 
+      from is_info_seat 
+      where i_t_num = #{i_t_num}
+      order by i_s_price desc, length(i_s_name), i_s_name -->
+      select i_s_name, i_s_floor, i_s_level, i_s_price, SUM(i_t_count) as i_t_count, SUM(i_s_end - i_s_start + 1) as i_s_total
+      	FROM
+      	is_info_seat
+      	where i_t_num = #{i_t_num}
+      	GROUP BY i_s_name, i_s_floor, i_s_level, i_s_price
+order by i_s_price desc, length(i_s_name), i_s_name
+	</select>
+	<select id="getSeatList" resultType="info.InfoSeatDataBean"
+		parameterType="int">
+		select i_s_level, i_s_price, SUM(i_t_count) as i_t_count
+      	FROM
+      	is_info_seat
+      	where i_t_num = #{i_t_num}
+      	GROUP BY i_s_level, i_s_price
+      	ORDER BY i_s_price desc
+	</select>
+	<!-- *** 판매현황 *** -->
+	<select id="getInfoSeat" resultType="info.InfoSeatDataBean" parameterType="int">
+		select distinct i_s_level, i_s_price from is_info_seat
+		where i_t_num = #{i_t_num} order by i_s_price desc
+	</select>
+	<select id="getinfoseat" resultType="info.InfoSeatDataBean" parameterType="int">
+		select * from is_info_seat where i_t_num=(select i_t_num from where i_d_num=
+		(select i_d_num from is_info_date where i_num=#{i_num}))
+	</select>
+	<select id="getis_info_seat" resultType="info.InfoSeatDataBean" parameterType="int">
+		select * from is_info_seat where i_t_num=#{i_t_num}
+	</select>
+	<delete id="deleteSeat" parameterType="int">
+		delete from is_info_seat where i_t_num=#{i_t_num}
+	</delete>
+	
+	<!-- seat_img -->
+	<insert id="getinsertSIDB" parameterType="info.InfoSeatImgDataBean">
+		insert into is_seat_img(s_img_num, s_img_hall, s_img_path, i_num)
+		values(seat_img_seq.NEXTVAL,#{s_img_hall},#{s_img_path},#{i_num})
+	</insert>
+	<select id="getSInums" resultType="int" parameterType="int">
+		select s_img_num from is_seat_img where i_num=#{i_num}
+	</select>
+	<select id="getinfosimg" resultType="info.InfoSeatImgDataBean" parameterType="int">
+		select * from is_seat_img where i_num=#{i_num} order by s_img_num asc
+	</select>
+	<delete id="deleteSeatImg" parameterType="int">
+		delete from is_seat_img where i_num=#{i_num}
+	</delete>
+
+	<!-- info_reply -->
+	<insert id="insertInfoReply" parameterType="info.InfoReplyDataBean">
+		insert into is_info_reply
+		values(info_reply_seq.NEXTVAL, #{i_re_content}, #{i_re_date}, #{i_re_score}, #{i_re_category}, #{i_num}, #{m_id})
+	</insert>
+	<select id="getInfoReplyList" resultType="info.InfoReplyDataBean"
+		parameterType="int">
+		select * from is_info_reply where i_num = #{i_num} 
+		order by i_re_date desc
+	</select>
+	<delete id="deleteInfoReview" parameterType="int">
+		delete from is_info_reply where i_re_num = #{i_re_num}
+	</delete>
+	<select id="getINumber" resultType="int" parameterType="int">
+		select i_num from is_info_reply where i_re_num = #{i_re_num}
+	</select>
+	<select id="getIReNum" resultType="int">
+		select info_reply_seq.currVal from dual
+	</select>
+	<select id="getReviewWriter" resultType="String"
+		parameterType="int">
+		select m_id from is_info_reply where i_re_num = #{i_re_num}
+	</select>
+	
+	<insert id="insert" parameterType="Map">
+ 		insert into is_seat_order values(seat_order_seq.NEXTVAL, #{seat}, 0, #{i_s_num})
+ 	</insert>
+ 	
+ 	<!-- 새로만든거 -->
+ 	<delete id="deleteorderseat" parameterType="int">
+ 		delete from is_seat_order where i_s_num=#{i_s_num}
+ 	</delete>
+ 	<select id="gettitlecount" parameterType="Map" resultType="int">
+ 		select count(*) from is_info where i_name like '%' || #{title} || '%' and c_category=#{category}
+ 	</select>
+ 	<select id="getInfoListRecent_find" resultType="info.InfoDataBean"
+		parameterType="Map">		
+		select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, rownum r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount 
+	    from is_info where i_name like '%' || #{title} || '%' and c_category = #{c_category}
+	    order by i_reg_date desc)) 
+	    where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	<select id="getInfoListCount_find" resultType="info.InfoDataBean"
+		parameterType="Map">		
+		select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, rownum r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount 
+	    from is_info where i_name like '%' || #{title} || '%' and c_category = #{c_category} 
+	    order by i_reg_date desc)) 
+	    where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	<select id="getInfoListReview_find" resultType="info.InfoDataBean"
+		parameterType="Map">		
+		select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount, rownum r 
+	    from (select i_num, i_name, i_period, i_score, i_location, i_location_addr, i_open_date, c_category, i_img_thumbnail, i_reg_date, i_readcount 
+	    from is_info where i_name like '%' || #{title} || '%' and c_category = #{c_category} 
+	    order by i_reg_date desc)) 
+	    where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	
+	<!-- 새로만든거 -->
+	<select id="getre_count" resultType="int" parameterType="int">
+		select count(*) from is_info_reply where i_num=#{i_num}
+	</select>
+	<delete id="deleteRePly" parameterType="int">
+		delete from is_info_reply where i_num=#{i_num}
+	</delete>
+	<update id="updateInfoDB1" parameterType="info.InfoDataBean">
+		update is_info 
+		set i_name=#{i_name}, i_location=#{i_location}, 
+		i_location_addr=#{i_location_addr}, i_location_zip=#{i_location_zip},
+		i_open_date=#{i_open_date}, c_category=#{c_category}, 
+		i_img_thumbnail=#{i_img_thumbnail}, 
+		i_period=#{i_period}, i_video_path=#{i_video_path, jdbcType=VARCHAR}
+		where i_num=#{i_num}
+	</update>
+ </mapper>

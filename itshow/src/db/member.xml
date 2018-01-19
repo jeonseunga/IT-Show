@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Member">
+	<select id="getinfoM" resultType="info.InfoDataBean" parameterType="String">
+		select * from is_info where m_id=#{id}
+	</select>
+	
+	<insert id="insertMember" parameterType="member.MemberDataBean">
+     	insert into is_member values(#{m_id}, #{m_pw}, #{m_name}, #{m_address, jdbcType=VARCHAR}, #{m_zipcode, jdbcType=VARCHAR}, #{m_tel, jdbcType=VARCHAR}, #{m_email, jdbcType=VARCHAR}, #{m_point, jdbcType=INTEGER}, #{m_code})
+    </insert> 
+
+	<select id="getCount" resultType="int">
+		select count(*) from is_member
+	</select>
+	
+	 <select id="mailCheck" resultType="int" parameterType="String">
+ 	     select count(*) from is_member where m_email=#{m_email}
+ 	</select>
+	
+	
+	<!-- 일반 회원 목록 -->
+	<select id="getArticles" parameterType="Map" resultType="member.MemberDataBean">
+	      select m_name, m_tel, m_address, m_id, r
+	      from(select m_name, m_tel, m_address, m_id, rownum r 
+	      from(select m_name, m_tel, m_address, m_id from is_member where m_code=2 order by m_name asc))
+	      where r &gt;=#{start} and r &lt;=#{end}
+    </select>
+	
+	<!-- 업체 회원 목록 -->
+	<select id="getCArticles" parameterType="Map" resultType="member.MemberDataBean">
+	      select m_name, m_tel, m_address, m_id, r
+	      from(select m_name, m_tel, m_address, m_id, rownum r 
+	      from(select m_name, m_tel, m_address, m_id from is_member where m_code=3 order by m_name asc))
+	      where r &gt;=#{start} and r &lt;=#{end}
+    </select>
+    
+    
+	<select id="check" resultType="int" parameterType="String">
+ 		select count(*) from is_member where m_id=#{m_id}
+ 	</select>
+
+	<select id="getMember" resultType="member.MemberDataBean" parameterType="String">
+ 		select * from is_member where m_id=#{m_id}
+ 	</select>
+
+	<update id="updateMember"  parameterType="member.MemberDataBean">
+		update is_member set m_pw=#{m_pw}, m_tel=#{m_tel}, m_email=#{m_email}, m_zipcode=#{m_zipcode, jdbcType=VARCHAR}, m_address=#{m_address, jdbcType=VARCHAR} where m_id=#{m_id}
+ 	</update>
+
+	<delete id="deleteMember" parameterType="String" >
+ 	   delete from is_member where m_id=#{m_id}
+ 	</delete>
+ 	
+ 	<select id="findCheck" resultType="int" parameterType="String">
+ 		select count(*) from is_member where m_name=#{m_name}
+ 	</select>
+ 	
+ 	<select id="getName" resultType="member.MemberDataBean" parameterType="String">
+ 	     select * from is_member where m_name=#{m_name}
+ 	</select>
+ 	
+ 	<select id="findId" resultType="int" parameterType="Map">
+ 	    select count(*) from is_member where m_name=#{m_name} and m_email=#{m_email}
+ 	</select>
+ 	
+ 	<select id="getId" resultType="member.MemberDataBean" parameterType="Map">
+ 		select * from is_member where m_name=#{m_name} and m_email=#{m_email}
+ 	</select>
+ 	
+ 	<select id="findPCheck" resultType="int" parameterType="String">
+ 	    select count(*) from is_member where m_id=#{m_id}
+ 	</select>
+ 	
+ 	<select id="findPw" resultType="int" parameterType="Map">
+ 	    select count(*) from is_member where m_id=#{m_id} and m_name=#{m_name}
+ 	</select>
+ 	
+ 	<select id="getPw" resultType="member.MemberDataBean" parameterType="Map">
+ 	    select * from is_member where m_id=#{m_id} and m_name=#{m_name}
+ 	</select>
+ 	
+
+	<select id="getCode" resultType="int" parameterType="String">
+		select m_code from is_member where m_id=#{m_id}
+	</select>
+	
+	<select id="getCounts" resultType="int" parameterType="String">
+		select count(*) from is_info where m_id=#{id}
+	</select>
+	
+	<select id="getOrder" resultType="order.OrderDataBean" parameterType="Map">
+		select * from is_order where m_id = #{id} and o_date >= #{date} order by o_num DESC
+	</select>
+	
+	<select id="ordercount" resultType="int" parameterType="Map">
+		select count(*) from is_order where m_id = #{id} and o_date >= #{date} 
+	</select>
+	
+	<select id="getSeat" resultType="String" parameterType="String">
+		select s_o_seatnum from is_seat_order where s_o_num = #{num}
+	</select>
+	
+	<select id="getImg" resultType="String" parameterType="String">
+		select i_img_thumbnail from is_info where i_name = #{title}
+	</select>
+	
+	<select id="egetOrder" resultType="order.OrderDataBean" parameterType="Map">
+		select * from is_order where m_id = #{id} and o_date <![CDATA[ < ]]> #{date} order by o_num DESC
+	</select>
+	
+	<select id="eordercount" resultType="int" parameterType="Map">
+		select count(*) from is_order where m_id = #{id} and o_date <![CDATA[ < ]]> #{date} 
+	</select>
+	
+	<select id="getInum" resultType="int" parameterType="String">
+		select i_num from is_info where i_name  = #{title}
+	</select>
+	
+	
+	
+	
+	<select id="getOrderList" resultType="order.OrderDataBean" parameterType="String">
+		select * from is_order where o_date <![CDATA[ <= ]]> #{daylater} and o_notification = 1 and o_mailcheck = 0
+	</select>
+	
+	<select id="getEmail" resultType="String" parameterType="String">
+		select m_email from is_member where m_id=#{id}
+	</select>
+	
+	<select id="getSeatOrder" resultType="order.OrderTicketDataBean" parameterType="int">
+		select * from is_order_ticket where o_num =#{o_num}
+	</select>
+	
+	<select id="getOrderCount" resultType="int" parameterType="String">
+		select count(*) from is_order where o_date <![CDATA[ <= ]]> #{daylater} and o_notification = 1 and o_mailcheck = 0
+	</select>
+	
+	<update id="updateOrder" parameterType="int">
+		update is_order set o_mailcheck = 1 where o_num = #{o_num}
+	</update>
+	
+	<select id="gettitle_count" resultType="int"
+		parameterType="String">		
+		select count(*) from is_info where i_name like '%' || #{title} || '%'
+	</select>
+	
+	<select id="getinfoFind" resultType="info.InfoDataBean" parameterType="String">
+		select * from is_info where i_name like '%' || #{title} || '%'
+	</select>
+	
+	<!-- 회원 삭제 -->
+	<!--공연리뷰  -->
+	<select id="check1" resultType="int" parameterType="String">
+	   select count(*) from is_info_reply where m_id=#{m_id}
+	</select> 
+	<delete id="deleteinfore" parameterType="String">
+	    delete from is_info_reply where m_id=#{m_id}
+	</delete>
+		
+	<!--문의사항-->
+	<select id="check2" resultType="int" parameterType="String">
+		select count(*) from is_qna where m_id=#{m_id}
+	</select>
+	<select id="getQnums" resultType="integer" parameterType="String">
+	    select q_num from is_qna where m_id=#{m_id}
+	</select>
+    <delete id="deleteQnum" parameterType="int">
+      delete from is_qna_reply  where q_num=#{q_num}
+    </delete>
+    <delete id="deleteqna" parameterType="String">
+	    delete from is_qna where m_id=#{m_id}
+	</delete>
+    
+	<!--예매-->
+	<select id="check4" resultType="int" parameterType="String">
+	    select count(*) from is_order where m_id=#{m_id}
+	</select>
+	<select id="getdOrder" resultType="int" parameterType="String">
+	   select o_num from is_order where m_id=#{m_id}
+	</select>
+	<delete id="deleteTicket" parameterType="int"> 
+	    delete from is_order_ticket where o_num=#{o_num}
+	</delete>
+	<delete id="deleteOnum" parameterType="int">
+	    delete from is_order where o_num=#{o_num}
+	</delete>
+	<delete id="deleteOrder" parameterType="String">
+	    delete from is_order where m_id=#{m_id}
+	</delete>
+	
+	<!--스크랩 -->
+	<select id="check5" resultType="int" parameterType="String">
+	   select count(*) from is_scrap where m_id=#{m_id}
+	</select>
+	<delete id="deleteScrap" parameterType="String">
+	    delete from is_scrap where m_id=#{m_id}
+	</delete>
+	
+	<!-- 채팅 -->
+	<select id="getChatRoom" resultType="int" parameterType="String">
+		select ch_room from is_chat where m_id = #{m_id}
+	</select>
+	<delete id="deleteChat" parameterType="int">
+		delete from is_chat where ch_room = #{ch_room}
+	</delete>
+	
+	<!--업체 공연 정보-->
+	<select id="Cominfo" resultType="int" parameterType="String">
+	    select count(*) from is_info where m_id=#{m_id}
+	</select>
+	<!-- i_num 가져오기 -->
+	<select id="getComdin" resultType="integer" parameterType="String">
+		select i_num from is_info where m_id=#{m_id}
+	</select>
+
+	<delete id="deleteScrapNum" parameterType="int">
+		delete from is_scrap where s_info_num = #{i_num}
+	</delete>
+	<delete id="deleteInfoReview" parameterType="int">
+		delete from is_info_reply where i_num = #{i_num}
+	</delete>
+	<delete id="deleteInfoContent" parameterType="int">
+		delete from is_info_content where i_num = #{i_num}
+	</delete>
+	<delete id="deleteInfoSeatImg" parameterType="int">
+		delete from is_seat_img where i_num = #{i_num}
+	</delete>
+	
+	<select id="getDateNumbers" resultType="int" parameterType="int">
+		select i_d_num from is_info_date where i_num = #{i_num}
+	</select>
+	<select id="getTimeNumbers" resultType="int" parameterType="int">
+		select i_t_num from is_info_time where i_d_num = #{i_d_num}
+	</select>
+	<select id="getSeatNumbers" resultType="int" parameterType="int">
+		select i_s_num from is_info_seat where i_t_num = #{i_t_num}
+	</select>
+	<select id="getSeatOrderNumbers" resultType="int" parameterType="int">
+		select s_o_num from is_seat_order where i_s_num = #{i_s_num}
+	</select>
+	
+	<delete id="deleteSeatOrder" parameterType="int">
+		delete from is_seat_order where i_s_num = #{i_s_num}
+	</delete>
+	<delete id="deleteSeat" parameterType="int">
+		delete from is_info_seat where i_t_num = #{i_t_num}
+	</delete>
+	<delete id="deleteTime" parameterType="int">
+		delete from is_info_time where i_d_num = #{i_d_num}
+	</delete>
+	<delete id="deleteDate" parameterType="int">
+		delete from is_info_date where i_num = #{i_num}
+	</delete>
+	<delete id="deleteInfo" parameterType="String">
+	    delete from is_info where m_id = #{m_id}
+	</delete>
+</mapper>

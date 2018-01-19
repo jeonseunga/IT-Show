@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace = "Scrap">
+ 	<select id="getCount" resultType="int" parameterType="String">
+		select count(*) from is_scrap where m_id=#{m_id}
+	</select>
+	
+	<select id="getsccount" resultType="int" parameterType="int">
+		select count(*) from is_scrap where s_info_num=#{i_num}
+	</select>
+	
+	<select id="getArticles" resultType="scrap.ScrapDataBean" parameterType="Map">
+			select s_num, s_name, s_info_num, s_info_category, s_img_path, m_id, r 
+			from (select s_num, s_name, s_info_num, s_info_category, s_img_path, m_id, rownum r 
+			from (select s_num, s_name, s_info_num, s_info_category, s_img_path, m_id from is_scrap where m_id=#{m_id} order by s_num desc)) 
+			where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	
+	<select id="checkId" resultType="String" parameterType="Map">
+		select m_id from is_scrap where s_num=${s_num}
+	</select>
+	
+	<delete id="deleteScrap" parameterType="int">
+		delete from is_scrap where s_num=#{s_num}
+	</delete>
+	
+	<insert id="insertScrap" parameterType="scrap.ScrapDataBean">
+ 		insert into is_scrap(s_num, s_name, s_info_num, s_info_category, s_img_path, m_id) 
+ 		values(scrap_seq.NEXTVAL, #{s_name}, #{s_info_num}, #{s_info_category}, #{s_img_path}, #{m_id})
+ 	</insert>
+ 	
+ 	<delete id="delScarp" parameterType="int">
+ 		delete from is_scrap where s_info_num=#{i_num}
+ 	</delete>
+ 	
+ 	<update id="updateScrap" parameterType="Map">
+ 		update is_scrap set s_info_category=#{i_category}, s_img_path=#{i_thumbnail} where s_info_num=#{i_num}
+ 	</update>
+ 	
+ 	<select id="checkscrap" resultType="int" parameterType="Map">
+ 		select count(*) from is_scrap where s_info_num=#{i_num} and m_id=#{m_id}
+ 	</select>
+ </mapper>

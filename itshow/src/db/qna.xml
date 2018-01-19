@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="QnA">
+ 	<select id="getCount" resultType="int">
+		select count(*) from is_qna
+	</select>
+ 	<insert id="insertArticle">
+ 		insert into is_qna values(qna_seq.NEXTVAL, #{q_title}, #{q_content}, #{q_date}, #{m_id})
+ 	</insert>
+ 	<select id="getArticles" resultType="qna.QnADataBean" 
+		parameterType="Map">
+			select q_num, q_title, q_content, q_date, m_id, r 
+			from (select q_num, q_title, q_content, q_date, m_id, rownum r 
+			from (select q_num, q_title, q_content, q_date, m_id from is_qna order by q_num desc)) 
+			where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	<select id="getArticle" resultType="qna.QnADataBean"
+		parameterType="int">
+			select * from is_qna where q_num = #{q_num}
+	</select>
+	<update id="updateArticle" parameterType="qna.QnADataBean">
+		update is_qna set 
+		q_title = #{q_title}, q_content = #{q_content} where q_num=#{q_num}
+	</update>
+	<delete id="deleteArticle" parameterType="int">
+		delete from is_qna where q_num=#{q_num}
+	</delete>
+	<delete id="deleteArticleReply" parameterType="int">
+		delete from is_qna_reply where q_num=#{q_num}
+	</delete>
+	
+	<select id="insertReply" resultType="int"
+		parameterType="qna.QnAReplyDataBean">
+		insert into is_qna_reply values(qna_reply_seq.NEXTVAL, #{q_re_content, jdbcType=VARCHAR}, #{q_re_date, jdbcType=VARCHAR}, #{q_num, jdbcType=VARCHAR}, #{m_id, jdbcType=VARCHAR})
+	</select>
+	<select id="getQReNum" resultType="int">
+		select qna_reply_seq.currVal from dual
+	</select>
+	<update id="updateReply" parameterType="qna.QnAReplyDataBean">
+	</update>
+	<delete id="deleteReply" parameterType="int">
+		delete from is_qna_reply where q_re_num = #{q_re_num}
+	</delete>
+	<select id="getReplies" resultType="qna.QnAReplyDataBean"
+		parameterType="int">
+		select * from is_qna_reply where q_num = #{q_num} order by q_re_date
+	</select>
+	<select id="getReplyCount" resultType="int" parameterType="int">
+		select count(*) from is_qna_reply where q_num = #{q_num}
+	</select>
+	
+	<select id="getPasswd" resultType="String" parameterType="String">
+		select m_pw from is_member where m_id = #{m_id}
+	</select>
+	
+	<select id="getSearchCountId" resultType="int" parameterType="String">
+		select count(*) from is_qna where m_id = #{keyword}
+	</select>
+	<select id="getSearchCountTitle" resultType="int" parameterType="String">
+		select count(*) from is_qna where q_title like '%' || #{keyword} || '%'
+	</select>
+	<select id="getSearchIdList" resultType="qna.QnADataBean"  parameterType="Map">
+		select q_num, q_title, q_content, q_date, m_id, r
+		from (select q_num, q_title, q_content, q_date, m_id, rownum r
+		from (select q_num, q_title, q_content, q_date, m_id from is_qna where m_id = #{keyword} 
+		order by q_num desc))
+		where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+	<select id="getSearchTitleList" resultType="qna.QnADataBean"  parameterType="Map">
+		select q_num, q_title, q_content, q_date, m_id, r
+		from (select q_num, q_title, q_content, q_date, m_id, rownum r
+		from (select q_num, q_title, q_content, q_date, m_id from is_qna where q_title like '%' || #{keyword} || '%' 
+		order by q_num desc))
+		where r &gt;= #{start} and r &lt;= #{end}
+	</select>
+ </mapper>
